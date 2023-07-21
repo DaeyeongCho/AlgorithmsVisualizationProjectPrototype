@@ -28,8 +28,9 @@ def checkbuttonAdvanced(var, frameAdvancedInput):
         frameAdvancedInput.pack_forget()
         
 
-def buttonStartFunc():
-    pass
+def buttonStartFunc(frameStarts, comboboxSelectAlgorithm, spinboxDataSize, spinboxSpeedLimit, spinboxShuffleTimes):
+    frameStarts.pack()
+    print(comboboxSelectAlgorithm.get(), spinboxDataSize.get(), spinboxSpeedLimit.get(), spinboxShuffleTimes.get())
 
 
 

@@ -1,7 +1,6 @@
 import tkinter
 from tkinter import *
 from tkinter import messagebox, ttk
-from PIL import Image, ImageTk
 
 from define import *
 from functions import *
@@ -24,16 +23,22 @@ def main():
 
     intVarSpinboxDataSize = IntVar()
     intVarSpinboxDataSize.set(100)
+    doubleVarSpeedLimit = DoubleVar()
+    doubleVarSpeedLimit.set(0.000)
     intVarSpinboxShuffleTimes = IntVar()
     intVarSpinboxShuffleTimes.set(10000)
-    intVarSpeedLimit = IntVar()
-    intVarSpeedLimit.set(0)
 
 
     #프레임 정의
     frameRadiobutton = tkinter.Frame(window)
     frameGeneralInput = tkinter.Frame(window)
     frameAdvancedInput = tkinter.Frame(window)
+    frameStarts = tkinter.Frame(window)
+    frameCanvas = tkinter.Frame(frameStarts)
+    frameHint = tkinter.Frame(frameStarts)
+    frameState = tkinter.Frame(frameStarts)
+    frameElapsedTime = tkinter.Frame(frameStarts)
+    frameEndButtons = tkinter.Frame(frameStarts)
 
 
     #라디오 버튼 프레임 내부 정의
@@ -46,7 +51,7 @@ def main():
 
     checkbuttonAdvancedInput = ttk.Checkbutton(frameGeneralInput, text=ADVANCED, variable=boolVarCheckButtonAdvanced, command=lambda: checkbuttonAdvanced(boolVarCheckButtonAdvanced, frameAdvancedInput))
     
-    buttonStart = Button(frameGeneralInput, text=START, command=lambda: buttonStartFunc())
+    buttonStart = Button(frameGeneralInput, text=START, command=lambda: buttonStartFunc(frameStarts, comboboxSelectAlgorithm, spinboxDataSize, spinboxSpeedLimit, spinboxShuffleTimes))
 
 
     #고급 입력 프레임 내부 정의
@@ -54,17 +59,30 @@ def main():
     spinboxDataSize = Spinbox(frameAdvancedInput, from_=DATASIZE_MIN, to=DATASIZE_MAX, increment=10, textvariable=intVarSpinboxDataSize)
 
     labelSpeedLimit = Label(frameAdvancedInput, text=SPEED_LIMIT)
-    spinboxSpeedLimit = Spinbox(frameAdvancedInput, from_=SPEED_LIMIT_MIN, to=SPEED_LIMIT_MAX, increment=1, textvariable=intVarSpeedLimit)
+    spinboxSpeedLimit = Spinbox(frameAdvancedInput, from_=SPEED_LIMIT_MIN, to=SPEED_LIMIT_MAX, increment=0.001, textvariable=doubleVarSpeedLimit)
 
     labelShuffleTimes = Label(frameAdvancedInput, text=SHUFFLETIMES)
     spinboxShuffleTimes = Spinbox(frameAdvancedInput, from_=SUFFLE_MIN, to=SUFFLE_MAX, increment=100, textvariable=intVarSpinboxShuffleTimes)
 
 
+    # 알고리즘 시작 프레임 내부 정의
+    canvas = Canvas(frameCanvas, width=1000, height=500, background="skyblue")
+
+
+
+
+
 
     #프레임 배치
-    frameRadiobutton.pack()
+    frameRadiobutton.pack(side=TOP)
     frameGeneralInput.pack_forget()
     frameAdvancedInput.pack_forget()
+    frameStarts.pack_forget()
+    frameCanvas.pack()
+    frameHint.pack()
+    frameState.pack()
+    frameElapsedTime.pack()
+    frameEndButtons.pack()
 
 
     #라디오버튼 프레임 내부 배치
@@ -90,6 +108,9 @@ def main():
     labelShuffleTimes.pack(side=LEFT, padx=5, pady=5)
     spinboxShuffleTimes.pack(side=LEFT, padx=5, pady=5)
 
+
+    #알고리즘 시작 프레임 내부 배치
+    canvas.pack()
 
 
     window.mainloop()
