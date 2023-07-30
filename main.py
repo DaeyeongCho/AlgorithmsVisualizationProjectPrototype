@@ -51,7 +51,7 @@ def main():
 
     checkbuttonAdvancedInput = ttk.Checkbutton(frameGeneralInput, text=ADVANCED, variable=boolVarCheckButtonAdvanced, command=lambda: checkbuttonAdvanced(boolVarCheckButtonAdvanced, frameAdvancedInput))
     
-    buttonStart = Button(frameGeneralInput, text=START, command=lambda: buttonStartFunc(frameStarts, comboboxSelectAlgorithm, spinboxDataSize, spinboxSpeedLimit, spinboxShuffleTimes))
+    buttonStart = Button(frameGeneralInput, text=START, command=lambda: buttonStartFunc(window, frameStarts, canvas, intVarRadioButton, comboboxSelectAlgorithm, spinboxDataSize, spinboxSpeedLimit, spinboxShuffleTimes))
 
 
     #고급 입력 프레임 내부 정의
@@ -66,9 +66,7 @@ def main():
 
 
     # 알고리즘 시작 프레임 내부 정의
-    canvas = Canvas(frameCanvas, width=1000, height=500, background="skyblue")
-
-
+    canvas = Canvas(frameCanvas, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, background="white")
 
 
 
@@ -111,6 +109,7 @@ def main():
 
     #알고리즘 시작 프레임 내부 배치
     canvas.pack()
+
 
 
     window.mainloop()
