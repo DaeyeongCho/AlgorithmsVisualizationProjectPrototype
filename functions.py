@@ -60,4 +60,10 @@ def shuffleStick(window, canvas, data, dataSize, shuffleTime):
         window.update()
         canvas.itemconfig(data[drawTwoStick[0]], fill="white")
         canvas.itemconfig(data[drawTwoStick[1]], fill="white")
-        
+
+
+## ====================== 정렬 알고리즘 ====================== ##
+
+
+## ====================== 탐색 알고리즘 ====================== ##
+
