@@ -5,115 +5,191 @@ from tkinter import messagebox, ttk
 from define import *
 from functions import *
 
-
-
 def main():
-    #윈도우 창 정의
+## ====================== 정의 ====================== ##
+
+    # 윈도우 창 정의
     window = Tk()
     window.title(TITLE)
     window.geometry(GEOMETRY)
     window.resizable(width=FALSE, height=FALSE)
 
-
-    #입력 타입 정의
-    intVarRadioButton = IntVar()
-
+    # 입력 타입 정의
+    intVarRadioButtonSelectAlgorithm = IntVar()
     strVarComboboxSelectAlgorithm = StringVar()
-    boolVarCheckButtonAdvanced = BooleanVar()
+    boolVarCheckbuttonAdvancedMenu = BooleanVar()
 
     intVarSpinboxDataSize = IntVar()
-    intVarSpinboxDataSize.set(100)
+    intVarSpinboxDataSize.set(DATA_SIZE_DEFAULT)
     doubleVarSpeedLimit = DoubleVar()
-    doubleVarSpeedLimit.set(0.000)
-    intVarSpinboxShuffleTimes = IntVar()
-    intVarSpinboxShuffleTimes.set(10000)
+    doubleVarSpeedLimit.set(SPEED_LIMIT_DEFAULT)
+    intVarShuffleTimes = IntVar()
+    intVarShuffleTimes.set(SHUFFLE_TIMES_DEFAULT)
+    intVarSearchValue = IntVar()
+    intVarSearchValue.set(SEARCH_VALUE_DEFAULT)
 
+    # 프레임 정의
+    frameGeneralMenu = tkinter.Frame(window)
+    frameAdvancedMenu = tkinter.Frame(window)
+    frameSimulation = tkinter.Frame(window)
 
-    #프레임 정의
-    frameRadiobutton = tkinter.Frame(window)
-    frameGeneralInput = tkinter.Frame(window)
-    frameAdvancedInput = tkinter.Frame(window)
-    frameStarts = tkinter.Frame(window)
-    frameCanvas = tkinter.Frame(frameStarts)
-    frameHint = tkinter.Frame(frameStarts)
-    frameState = tkinter.Frame(frameStarts)
-    frameElapsedTime = tkinter.Frame(frameStarts)
-    frameEndButtons = tkinter.Frame(frameStarts)
+    frameSimulationHint = tkinter.Frame(frameSimulation)
+    frameSimulationState = tkinter.Frame(frameSimulation)
+    frameSimulationElapsedTime = tkinter.Frame(frameSimulation)
+    frameSimulationEndButtons = tkinter.Frame(frameSimulation)
 
-
-    #라디오 버튼 프레임 내부 정의
-    radiobuttonList = [ Radiobutton(frameRadiobutton, text=RADIOBUTTON_TEXT[0], variable=intVarRadioButton, value=1, command=lambda: radioButtonFunc(intVarRadioButton, comboboxSelectAlgorithm, frameGeneralInput, labelShuffleTimes, spinboxShuffleTimes)), 
-                        Radiobutton(frameRadiobutton, text=RADIOBUTTON_TEXT[1], variable=intVarRadioButton, value=2, command=lambda: radioButtonFunc(intVarRadioButton, comboboxSelectAlgorithm, frameGeneralInput, labelShuffleTimes, spinboxShuffleTimes))]
-
-
-    #일반 입력 프레임 내부 정의
-    comboboxSelectAlgorithm = ttk.Combobox(frameGeneralInput, textvariable=strVarComboboxSelectAlgorithm, values=[], state="readonly")
-
-    checkbuttonAdvancedInput = ttk.Checkbutton(frameGeneralInput, text=ADVANCED, variable=boolVarCheckButtonAdvanced, command=lambda: checkbuttonAdvanced(boolVarCheckButtonAdvanced, frameAdvancedInput))
+    # General Menu 프레임 하위 위젯 정의
+    radioButtonSelectAlgorithm = [ Radiobutton(frameGeneralMenu, text=RADIO_BUTTON_SELECT_ALGORITHM[0], variable=intVarRadioButtonSelectAlgorithm, value=0, command=lambda: radioButtonSelectAlgorithmFunc(intVarRadioButtonSelectAlgorithm)),
+                                   Radiobutton(frameGeneralMenu, text=RADIO_BUTTON_SELECT_ALGORITHM[1], variable=intVarRadioButtonSelectAlgorithm, value=1, command=lambda: radioButtonSelectAlgorithmFunc(intVarRadioButtonSelectAlgorithm)) ]
     
-    buttonStart = Button(frameGeneralInput, text=START, command=lambda: buttonStartFunc(window, frameStarts, canvas, intVarRadioButton, comboboxSelectAlgorithm, spinboxDataSize, spinboxSpeedLimit, spinboxShuffleTimes))
+    comboboxSelectAlgorithm = ttk.Combobox(frameGeneralMenu, textvariable=strVarComboboxSelectAlgorithm, values=SORT_ALGORITHMS, state="readonly")
+    comboboxSelectAlgorithm.set(SORT_ALGORITHMS[0])
 
+    checkbuttonAdvancedMenu = ttk.Checkbutton(frameGeneralMenu, text=ADVANCED_MENU, variable=boolVarCheckbuttonAdvancedMenu, command=lambda: checkbuttonAdvancedMenuFunc(boolVarCheckbuttonAdvancedMenu))
 
-    #고급 입력 프레임 내부 정의
-    labelDataSize = Label(frameAdvancedInput, text=DATASIZE)
-    spinboxDataSize = Spinbox(frameAdvancedInput, from_=DATASIZE_MIN, to=DATASIZE_MAX, increment=10, textvariable=intVarSpinboxDataSize)
-
-    labelSpeedLimit = Label(frameAdvancedInput, text=SPEED_LIMIT)
-    spinboxSpeedLimit = Spinbox(frameAdvancedInput, from_=SPEED_LIMIT_MIN, to=SPEED_LIMIT_MAX, increment=0.001, textvariable=doubleVarSpeedLimit)
-
-    labelShuffleTimes = Label(frameAdvancedInput, text=SHUFFLETIMES)
-    spinboxShuffleTimes = Spinbox(frameAdvancedInput, from_=SUFFLE_MIN, to=SUFFLE_MAX, increment=100, textvariable=intVarSpinboxShuffleTimes)
-
-
-    # 알고리즘 시작 프레임 내부 정의
-    canvas = Canvas(frameCanvas, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, background="white")
-
-
-
-
-    #프레임 배치
-    frameRadiobutton.pack(side=TOP)
-    frameGeneralInput.pack_forget()
-    frameAdvancedInput.pack_forget()
-    frameStarts.pack_forget()
-    frameCanvas.pack()
-    frameHint.pack()
-    frameState.pack()
-    frameElapsedTime.pack()
-    frameEndButtons.pack()
-
-
-    #라디오버튼 프레임 내부 배치
-    for radiobuttons in radiobuttonList:
-        radiobuttons.pack(side=LEFT, padx=30, pady=5)
-
-
-    #일반 입력 프레임 내부 배치
-    comboboxSelectAlgorithm.pack(side=LEFT, padx=5, pady=5)
-
-    checkbuttonAdvancedInput.pack(side=LEFT, padx=10, pady=5)
+    buttonStart = Button(frameGeneralMenu, text=START, command=lambda: bottonStartFunc())
     
+    # Advanced Menu 프레임 하위 위젯 정의
+    labelDataSize = Label(frameAdvancedMenu, text=DATA_SIZE)
+    spinboxDataSize = Spinbox(frameAdvancedMenu, from_=DATA_SIZE_MIN, to=DATA_SIZE_MAX, increment=DATA_SIZE_INCREMENT, textvariable=intVarSpinboxDataSize, width=SPIN_BOX_WIDTH, command=lambda: spinboxDataSizeFunc())
+
+    labelSpeedLimit = Label(frameAdvancedMenu, text=SPEED_LIMIT)
+    spinboxSpeedLimit = Spinbox(frameAdvancedMenu, from_=SPEED_LIMIT_MIN, to=SPEED_LIMIT_MAX, increment=SPEED_LIMIT_INCREMENT, textvariable=doubleVarSpeedLimit, width=SPIN_BOX_WIDTH)
+
+    labelShuffleTimes = Label(frameAdvancedMenu, text=SHUFFLE_TIMES)
+    spinboxShuffleTimes = Spinbox(frameAdvancedMenu, from_=SHUFFLE_TIMES_MIN, to=SHUFFLE_TIMES_MAX, increment=SHUFFLE_TIMES_INCREMENT, textvariable=intVarShuffleTimes, width=SPIN_BOX_WIDTH)
+
+    labelSearchValue = Label(frameAdvancedMenu, text=SEARCH_VALUE)
+    spinboxSearchValue = Spinbox(frameAdvancedMenu, from_=SEARCH_VALUE_MIN, to=int(intVarSpinboxDataSize.get()), increment=SEARCH_VALUE_INCREMENT, textvariable=intVarSearchValue, width=SPIN_BOX_WIDTH)
+
+    # Simulation 프레임 하위 위젯 정의
+    canvas = Canvas(frameSimulation, width=CANVAS_WIDTH, height=CANVAS_HEIGHT, background=CANVAS_COLOR)
+
+    labelHint = [ Label(frameSimulationHint, text=LABEL_HINT[0], foreground=LABEL_HINT_COLOR[0]),
+                  Label(frameSimulationHint, text=LABEL_HINT[1], foreground=LABEL_HINT_COLOR[1]),
+                  Label(frameSimulationHint, text=LABEL_HINT[2], foreground=LABEL_HINT_COLOR[2])]
+    
+    labelState = [ Label(frameSimulationState, text=LABEL_STATE[0]),
+                   Label(frameSimulationState, text=LABEL_STATE[1]) ]
+
+    labelElapsedTime = [ Label(frameSimulationElapsedTime, text=ELAPSED_TIME[0]),
+                         Label(frameSimulationElapsedTime, text=ELAPSED_TIME[1]) ]
+    
+    buttonEnd = [ Button(frameSimulationEndButtons, text=END_BUTTONS[0], command=lambda: buttonStopFunc()),
+                  Button(frameSimulationEndButtons, text=END_BUTTONS[1], command=lambda: buttonReplayFunc()),
+                  Button(frameSimulationEndButtons, text=END_BUTTONS[2], command=lambda: buttonEndFunc()),]
+
+
+
+## ====================== 프로그램 ====================== ##
+
+    # General Menu 프로그램
+    def radioButtonSelectAlgorithmFunc(intVar):
+        if intVar.get() == 0:
+            comboboxSelectAlgorithm.configure(values=SORT_ALGORITHMS)
+            comboboxSelectAlgorithm.set(SORT_ALGORITHMS[0])
+            labelShuffleTimes.pack(side=LEFT, padx=(10, 0))
+            spinboxShuffleTimes.pack(side=LEFT, padx=(2, 0))
+            labelSearchValue.pack_forget()
+            spinboxSearchValue.pack_forget()
+        else:
+            comboboxSelectAlgorithm.configure(values=SEARCH_ALGORITHMS)
+            comboboxSelectAlgorithm.set(SEARCH_ALGORITHMS[0])
+            labelShuffleTimes.pack_forget()
+            spinboxShuffleTimes.pack_forget()
+            labelSearchValue.pack(side=LEFT, padx=(10, 0))
+            spinboxSearchValue.pack(side=LEFT, padx=(2, 0))
+
+    def checkbuttonAdvancedMenuFunc(boolVar):
+        if not boolVar.get():
+            frameAdvancedMenu.pack_forget()
+        else:
+            frameAdvancedMenu.pack(side=TOP)
+
+    def bottonStartFunc():
+        frameSimulation.pack(side=BOTTOM, pady=(0, 10))
+        sortOrSearchAlgorithm = intVarRadioButtonSelectAlgorithm.get()
+        algorithm = strVarComboboxSelectAlgorithm.get()
+        dataSize = intVarSpinboxDataSize.get()
+        speedLimit = doubleVarSpeedLimit.get()
+        shuffleTime = intVarShuffleTimes.get()
+        searchValue = intVarSearchValue.get()
+
+        radioButtonSelectAlgorithm[0].config(state="disabled")
+        radioButtonSelectAlgorithm[1].config(state="disabled")
+        comboboxSelectAlgorithm.config(state="disabled")
+        checkbuttonAdvancedMenu.config(state="disabled")
+        buttonStart.config(state="disabled")
+        spinboxDataSize.config(state="disabled")
+        spinboxSpeedLimit.config(state="disabled")
+        spinboxShuffleTimes.config(state="disabled")
+        spinboxSearchValue.config(state="disabled")
+
+        startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, speedLimit, shuffleTime, searchValue, labelState[1], labelElapsedTime[1])
+
+    # Advanced Menu 프로그램
+    def spinboxDataSizeFunc() :
+        spinboxSearchValue.config(to=int(intVarSpinboxDataSize.get()))
+
+    # Simulation 프로그램
+    def buttonStopFunc():
+        pass
+
+    def buttonReplayFunc():
+        pass
+
+    def buttonEndFunc():
+        pass
+
+
+## ====================== 배치 ====================== ##
+
+    # 프레임 패킹
+    frameGeneralMenu.pack(side=TOP)
+    frameAdvancedMenu.pack_forget()
+    frameSimulation.pack_forget()
+
+    # General Menu 패킹
+    radioButtonSelectAlgorithm[0].pack(side=LEFT)
+    radioButtonSelectAlgorithm[1].pack(side=LEFT)
+    comboboxSelectAlgorithm.pack(side=LEFT, padx=(10, 0))
+    checkbuttonAdvancedMenu.pack(side=LEFT, padx=(10, 0))
     buttonStart.pack(side=LEFT, padx=5, pady=5, ipadx=15, ipady=3)
 
+    # Advanced Menu 패킹
+    labelDataSize.pack(side=LEFT)
+    spinboxDataSize.pack(side=LEFT, padx=(2, 0))
+    labelSpeedLimit.pack(side=LEFT, padx=(10, 0))
+    spinboxSpeedLimit.pack(side=LEFT, padx=(2, 0))
+    labelShuffleTimes.pack(side=LEFT, padx=(10, 0))
+    spinboxShuffleTimes.pack(side=LEFT, padx=(2, 0))
+    labelSearchValue.pack_forget()
+    spinboxSearchValue.pack_forget()
 
-    #고급 입력 프레임 내부 배치
-    labelDataSize.pack(side=LEFT, padx=5, pady=5)
-    spinboxDataSize.pack(side=LEFT, padx=5, pady=5)
-
-    labelSpeedLimit.pack(side=LEFT, padx=5, pady=5)
-    spinboxSpeedLimit.pack(side=LEFT, padx=5, pady=5)
-
-    labelShuffleTimes.pack(side=LEFT, padx=5, pady=5)
-    spinboxShuffleTimes.pack(side=LEFT, padx=5, pady=5)
-
-
-    #알고리즘 시작 프레임 내부 배치
+    # Simulation 패킹
     canvas.pack()
 
+    frameSimulationHint.pack(side=TOP)
+    frameSimulationState.pack(side=TOP)
+    frameSimulationElapsedTime.pack(side=TOP)
+    frameSimulationEndButtons.pack(side=TOP)
+
+    labelHint[0].pack(side=LEFT)
+    labelHint[1].pack(side=LEFT)
+    labelHint[2].pack(side=LEFT)
+
+    labelState[0].pack(side=LEFT)
+    labelState[1].pack(side=LEFT)
+
+    labelElapsedTime[0].pack(side=LEFT)
+    labelElapsedTime[1].pack(side=LEFT)
+
+    buttonEnd[0].pack(side=LEFT, padx=5, pady=5, ipadx=15, ipady=3)
+    buttonEnd[1].pack(side=LEFT, padx=5, pady=5, ipadx=15, ipady=3)
+    buttonEnd[2].pack(side=LEFT, padx=5, pady=5, ipadx=15, ipady=3)
 
 
     window.mainloop()
-
 
 if __name__=="__main__":
     main()

@@ -1,57 +1,81 @@
-import time
+import tkinter, random
 from tkinter import *
-import random
+from tkinter import messagebox, ttk
+from time import sleep
 
 from define import *
 
-## 라디오 버튼 프레임 함수들 ##
-
-#라디오 버튼
-def radioButtonFunc(var, comboboxSelectAlgorithm, frameGeneralInput, labelShuffleTimes, spinboxShuffleTimes):
-    if var.get() == 1:
-        comboboxSelectAlgorithm.configure(values=SORT_ALGORITHMS)
-        comboboxSelectAlgorithm.set(SORT_ALGORITHMS[0])
-        frameGeneralInput.pack()
-        labelShuffleTimes.pack(side=LEFT, padx=5, pady=5)
-        spinboxShuffleTimes.pack(side=LEFT, padx=5, pady=5)
-    elif var.get() == 2:
-        comboboxSelectAlgorithm.configure(values=SEARCH_ALGORITHMS)
-        comboboxSelectAlgorithm.set(SEARCH_ALGORITHMS[0])
-        frameGeneralInput.pack()
-        labelShuffleTimes.pack_forget()
-        spinboxShuffleTimes.pack_forget()
-
-
-## 일반 입력 프레임 함수들 ##
-def checkbuttonAdvanced(var, frameAdvancedInput):
-    if var.get() == True:
-        frameAdvancedInput.pack()
-    else:
-        frameAdvancedInput.pack_forget()
-        
-
-def buttonStartFunc(window, frameStarts, canvas, intVarRadioButton, comboboxSelectAlgorithm, spinboxDataSize, spinboxSpeedLimit, spinboxShuffleTimes):
-    frameStarts.pack()
-    print(intVarRadioButton.get(), comboboxSelectAlgorithm.get(), spinboxDataSize.get(), spinboxSpeedLimit.get(), spinboxShuffleTimes.get())
-
-    datas = list(range(int(spinboxDataSize.get())))
-
+def startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, speedLimit, shuffleTime, searchValue, labelState, labelElapsedTime):
+    running = True
+    timer = 0
+    data = list(range(1, dataSize + 1))
+    for i in range(dataSize):
+        canvas.create_rectangle(0, 0, CANVAS_WIDTH / dataSize, CANVAS_HEIGHT * (i + 1) / dataSize, fill="white")
     
+    stickRelocation(canvas, data, dataSize)
 
-    sticks = [None] * int(spinboxDataSize.get())
-    sticksWidth = int(CANVAS_WIDTH / len(sticks))
+    # window.update()
+
+    # time.sleep(1)
+
+    # canvas.itemconfig(data[1], fill="blue")
+    # canvas.itemconfig(data[3], fill="blue")
+
+    # window.update()
+
+    # time.sleep(1)
+
+    # data[1], data[3] = data[3], data[1]
+
+    # stickRelocation(canvas, data, dataSize)
+
+    # window.update()
+
+    # time.sleep(1)
+
+    # canvas.itemconfig(data[1], fill="white")
+    # canvas.itemconfig(data[3], fill="white")
+
+    if sortOrSearchAlgorithm == 0:
+        labelState.configure(text=LABEL_STATE[2])
+        shuffleStick(window, canvas, data, dataSize, shuffleTime)
+
+    else:
+        labelState.configure(text=LABEL_STATE[4])
+        startTimer(window, running, timer, labelElapsedTime)
 
 
-    for i in range(len(sticks)):
-        sticks[i] = canvas.create_rectangle((CANVAS_WIDTH / len(sticks) * i), CANVAS_HEIGHT - (CANVAS_HEIGHT / (len(sticks) + 1) * (i + 1)), CANVAS_WIDTH / len(sticks) * i + sticksWidth, CANVAS_HEIGHT, fill="white")
+# simulation 프레임 타이머 함수
+def startTimer(window, running, timer, labelElapsedTime):
+    if running:
+        timer += 1
+        labelElapsedTime.configure(text=str(timer // 1000) + ":" + str(timer % 1000).zfill(3))
 
+    window.after(1, lambda: startTimer(window, running, timer, labelElapsedTime))
 
-    shape = canvas.create_rectangle(10, 10, 100, 100, fill="yellow")
-    canvas.itemconfig(shape, fill="red")
+# canvas의 막대 그래프 순서에 따라 재배치
+def stickRelocation(canvas, data, dataSize):
+    for i in data:
+        canvas.moveto(i,  CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i / dataSize + 1)
+    pass
+    # for i in range(dataSize):
+    #     canvas.moveto(data[i][1], CANVAS_WIDTH * data[i][0] / dataSize - CANVAS_WIDTH / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * (i + 1) / dataSize + 1)
 
-    for i in range(50):
-        canvas.move(shape, 5, 0)
+# 막대 섞기 함수
+def shuffleStick(window, canvas, data, dataSize, shuffleTime):
+    drawTwoStick = []
+
+    for i in range(shuffleTime):
+        drawTwoStick = random.sample(data, 2)
+        drawTwoStick[0] -= 1
+        drawTwoStick[1] -= 1
+        canvas.itemconfig(data[drawTwoStick[0]], fill="red")
+        canvas.itemconfig(data[drawTwoStick[1]], fill="red")
         window.update()
-        time.sleep(0.1)
+        data[drawTwoStick[0]], data[drawTwoStick[1]] = data[drawTwoStick[1]], data[drawTwoStick[0]]
+        stickRelocation(canvas, data, dataSize)
+        window.update()
+        canvas.itemconfig(data[drawTwoStick[0]], fill="white")
+        canvas.itemconfig(data[drawTwoStick[1]], fill="white")
 
-## 고급 입력 프레임 함수들 ##
+    print(data)
