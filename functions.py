@@ -15,30 +15,13 @@ def startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, 
     stickRelocation(canvas, data, dataSize)
 
     # window.update()
-
     # time.sleep(1)
-
-    # canvas.itemconfig(data[1], fill="blue")
-    # canvas.itemconfig(data[3], fill="blue")
-
-    # window.update()
-
-    # time.sleep(1)
-
-    # data[1], data[3] = data[3], data[1]
-
-    # stickRelocation(canvas, data, dataSize)
-
-    # window.update()
-
-    # time.sleep(1)
-
-    # canvas.itemconfig(data[1], fill="white")
-    # canvas.itemconfig(data[3], fill="white")
 
     if sortOrSearchAlgorithm == 0:
         labelState.configure(text=LABEL_STATE[2])
         shuffleStick(window, canvas, data, dataSize, shuffleTime)
+        window.update()
+        labelState.configure(text=LABEL_STATE[3])
 
     else:
         labelState.configure(text=LABEL_STATE[4])
@@ -53,13 +36,12 @@ def startTimer(window, running, timer, labelElapsedTime):
 
     window.after(1, lambda: startTimer(window, running, timer, labelElapsedTime))
 
+
 # canvas의 막대 그래프 순서에 따라 재배치
 def stickRelocation(canvas, data, dataSize):
     for i in data:
         canvas.moveto(i,  CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i / dataSize + 1)
-    pass
-    # for i in range(dataSize):
-    #     canvas.moveto(data[i][1], CANVAS_WIDTH * data[i][0] / dataSize - CANVAS_WIDTH / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * (i + 1) / dataSize + 1)
+
 
 # 막대 섞기 함수
 def shuffleStick(window, canvas, data, dataSize, shuffleTime):
@@ -73,9 +55,9 @@ def shuffleStick(window, canvas, data, dataSize, shuffleTime):
         canvas.itemconfig(data[drawTwoStick[1]], fill="red")
         window.update()
         data[drawTwoStick[0]], data[drawTwoStick[1]] = data[drawTwoStick[1]], data[drawTwoStick[0]]
-        stickRelocation(canvas, data, dataSize)
+        canvas.moveto(data[drawTwoStick[0]], CANVAS_WIDTH * drawTwoStick[0] / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[drawTwoStick[0]] / dataSize + 1)
+        canvas.moveto(data[drawTwoStick[1]], CANVAS_WIDTH * drawTwoStick[1] / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[drawTwoStick[1]] / dataSize + 1)
         window.update()
         canvas.itemconfig(data[drawTwoStick[0]], fill="white")
         canvas.itemconfig(data[drawTwoStick[1]], fill="white")
-
-    print(data)
+        
