@@ -46,7 +46,7 @@ CANVAS_COLOR = "white"
 LABEL_HINT = ["주목", "비교", "픽스드"]
 LABEL_HINT_COLOR = ["red", "blue", "yellow"]
 
-LABEL_STATE = ["상태 : ", "---", "섞는 중...", "정렬 중...", "탐색 중...", "정렬 완료!", "탐색 완료!"]
+LABEL_STATE = ["상태 : ", "---", "섞는 중...", "정렬 중...", "탐색 중...","섞기 완료!" , "정렬 완료!", "탐색 완료!"]
 
 ELAPSED_TIME = ["시간(s:ms)", "--:---"]
 

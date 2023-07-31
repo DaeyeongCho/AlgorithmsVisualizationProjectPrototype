@@ -1,10 +1,10 @@
-import tkinter, random
+import tkinter, random, time
 from tkinter import *
 from tkinter import messagebox, ttk
-from time import sleep
 
 from define import *
 
+# 시작 버튼 클릭 시 동작
 def startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, speedLimit, shuffleTime, searchValue, labelState, labelElapsedTime):
     running = True
     timer = 0
@@ -14,15 +14,17 @@ def startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, 
     
     stickRelocation(canvas, data, dataSize)
 
-    # window.update()
-    # time.sleep(1)
-
     if sortOrSearchAlgorithm == 0:
         labelState.configure(text=LABEL_STATE[2])
         shuffleStick(window, canvas, data, dataSize, shuffleTime)
+        labelState.configure(text=LABEL_STATE[5])
+        window.update()
+        time.sleep(1)
         window.update()
         labelState.configure(text=LABEL_STATE[3])
-
+        startTimer(window, running, timer, labelElapsedTime)
+        if algorithm == SORT_ALGORITHMS[0]:
+            bubbleSort(window, canvas, data, dataSize, speedLimit)
     else:
         labelState.configure(text=LABEL_STATE[4])
         startTimer(window, running, timer, labelElapsedTime)
@@ -43,26 +45,85 @@ def stickRelocation(canvas, data, dataSize):
         canvas.moveto(i,  CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i / dataSize + 1)
 
 
-# 막대 섞기 함수
+# 정렬 알고리즘에서 막대 섞기 함수
 def shuffleStick(window, canvas, data, dataSize, shuffleTime):
     drawTwoStick = []
 
     for i in range(shuffleTime):
         drawTwoStick = random.sample(data, 2)
-        drawTwoStick[0] -= 1
-        drawTwoStick[1] -= 1
-        canvas.itemconfig(data[drawTwoStick[0]], fill="red")
-        canvas.itemconfig(data[drawTwoStick[1]], fill="red")
-        window.update()
-        data[drawTwoStick[0]], data[drawTwoStick[1]] = data[drawTwoStick[1]], data[drawTwoStick[0]]
-        canvas.moveto(data[drawTwoStick[0]], CANVAS_WIDTH * drawTwoStick[0] / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[drawTwoStick[0]] / dataSize + 1)
-        canvas.moveto(data[drawTwoStick[1]], CANVAS_WIDTH * drawTwoStick[1] / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[drawTwoStick[1]] / dataSize + 1)
-        window.update()
-        canvas.itemconfig(data[drawTwoStick[0]], fill="white")
-        canvas.itemconfig(data[drawTwoStick[1]], fill="white")
+        exchangePairStick(window, canvas, data, dataSize, drawTwoStick[0] - 1, drawTwoStick[1] - 1, 0, "red", "red")
+
+# 두 막대 교환 함수
+def exchangePairStick(window, canvas, data, dataSize, attentionStickIndex, compareStickIndex, speedLimit = 0, attentionStickColor = "red", compareStickColor = "blue"):
+    canvas.itemconfig(data[attentionStickIndex], fill=attentionStickColor)
+    canvas.itemconfig(data[compareStickIndex], fill=compareStickColor)
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+    data[attentionStickIndex], data[compareStickIndex] = data[compareStickIndex], data[attentionStickIndex]
+    canvas.moveto(data[attentionStickIndex], CANVAS_WIDTH * attentionStickIndex / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[attentionStickIndex] / dataSize + 1)
+    canvas.moveto(data[compareStickIndex], CANVAS_WIDTH * compareStickIndex / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[compareStickIndex] / dataSize + 1)
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+    canvas.itemconfig(data[attentionStickIndex], fill="white")
+    canvas.itemconfig(data[compareStickIndex], fill="white")
+
+# 두 막대를 교환하지 않고 색상만 표현하는 함수
+def notExchangePairStick(window, canvas, data, dataSize, attentionStickIndex, compareStickIndex, speedLimit = 0, attentionStickColor = "red", compareStickColor = "blue"):
+    canvas.itemconfig(data[attentionStickIndex], fill=attentionStickColor)
+    canvas.itemconfig(data[compareStickIndex], fill=compareStickColor)
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+    canvas.itemconfig(data[attentionStickIndex], fill="white")
+    canvas.itemconfig(data[compareStickIndex], fill="white")
+
+# 막대 색상 빨간 색으로
+def changeColorRed(window, canvas, data, stickIndex, speedLimit = 0):
+    canvas.itemconfig(data[stickIndex], fill="red")
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+
+# 막대 색상 파란 색으로
+def changeColorBlue(window, canvas, data, stickIndex, speedLimit = 0):
+    canvas.itemconfig(data[stickIndex], fill="blue")
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+
+
+# 막대 색상 노란 색으로
+def changeColorYellow(window, canvas, data, stickIndex, speedLimit = 0):
+    canvas.itemconfig(data[stickIndex], fill="yellow")
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
+
+
+# 막대 색상 흰 색으로
+def changeColorWhite(window, canvas, data, stickIndex, speedLimit = 0):
+    canvas.itemconfig(data[stickIndex], fill="white")
+    window.update()
+    if speedLimit != 0:
+        time.sleep(speedLimit)
 
 
 ## ====================== 정렬 알고리즘 ====================== ##
+def bubbleSort(window, canvas, data, dataSize, speedLimit):
+    for i in range(dataSize):
+        for y in range(dataSize - 1, i, -1):
+            if data[y] < data[y - 1]:
+                exchangePairStick(window, canvas, data, dataSize, y, y - 1, speedLimit)
+            elif speedLimit != 0:
+                notExchangePairStick(window, canvas, data, dataSize, y, y - 1, speedLimit)
+            else:
+                continue
+        changeColorYellow(window, canvas, data, i)
 
 
 ## ====================== 탐색 알고리즘 ====================== ##
