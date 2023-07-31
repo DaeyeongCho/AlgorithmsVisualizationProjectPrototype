@@ -1,9 +1,12 @@
+import random
+import threading
+import time
 import tkinter
 from tkinter import *
 from tkinter import messagebox, ttk
 
 from define import *
-from functions import *
+#from functions import *
 
 def main():
 ## ====================== 정의 ====================== ##
@@ -107,6 +110,13 @@ def main():
             frameAdvancedMenu.pack(side=TOP)
 
     def buttonStartFunc():
+        global sortOrSearchAlgorithm
+        global algorithm
+        global dataSize
+        global speedLimit
+        global shuffleTime
+        global searchValue
+
         frameSimulation.pack(side=BOTTOM, pady=(0, 10))
         sortOrSearchAlgorithm = intVarRadioButtonSelectAlgorithm.get()
         algorithm = strVarComboboxSelectAlgorithm.get()
@@ -125,7 +135,12 @@ def main():
         spinboxShuffleTimes.config(state="disabled")
         spinboxSearchValue.config(state="disabled")
 
-        startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, speedLimit, shuffleTime, searchValue, labelState[1], labelElapsedTime[1], buttonEnd)
+        print(speedLimit)
+
+        createSticks()
+
+        startSimulationThread()
+
 
     # Advanced Menu 프로그램
     def spinboxDataSizeFunc() :
@@ -136,13 +151,112 @@ def main():
         pass
 
     def buttonReplayFunc():
-        buttonEnd[1].config(state="disabled")
-        buttonEnd[2].config(state="disabled")
-        canvas.delete(ALL)
-        buttonStartFunc()
+        pass
 
     def buttonEndFunc():
         pass
+
+## ====================== 타이머 함수 ====================== ##
+    def timerFunc():
+        if timerRunning:
+            global timerStartTime
+            timerNowTime = int((time.time() - timerStartTime) * 1000)
+            labelElapsedTime[1].config(text=str(timerNowTime // 1000) + ":" + str(timerNowTime % 1000).zfill(3))
+        window.after(1, timerFunc)
+
+
+## ====================== buttonStart 클릭 이후 함수들 ====================== ##
+
+    # canvas의 data[데이터 값, 막대 그래프] 리스트 생성 및 순서에 따라 재배치
+    def createSticks():
+        for i in range(dataSize):
+            data.append([i + 1, canvas.create_rectangle(0, 0, CANVAS_WIDTH / dataSize, CANVAS_HEIGHT * (i + 1) / dataSize, fill="white")])
+
+        for i in data:
+            canvas.moveto(i[1], CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i[0] / dataSize + 1)
+
+    # 시작 버튼 클릭 시 시뮬레이션 하는 쓰레드 생성
+    def startSimulationThread():
+        thread = threading.Thread(target=startSimulation)
+        thread.daemon = True
+        thread.start()
+
+    # 시뮬레이션 메인 함수
+    def startSimulation():
+        global timerRunning
+        global timerStartTime
+
+        if sortOrSearchAlgorithm == 0:
+            shuffleStick()
+            timerStartTime = time.time()
+            timerRunning = True
+            if algorithm == SORT_ALGORITHMS[0]:
+                bubbleSort()
+        else:
+            pass
+
+        timerRunning = False
+
+    # 두 막대 교환 함수
+    def exchangePairStick(attentionStickIndex, compareStickIndex, attentionStickColor = "red", compareStickColor = "blue"):
+        canvas.itemconfig(data[attentionStickIndex][1], fill=attentionStickColor)
+        canvas.itemconfig(data[compareStickIndex][1], fill=compareStickColor)
+
+        if speedLimit != 0:
+            time.sleep(speedLimit / 2)
+        data[attentionStickIndex], data[compareStickIndex] = data[compareStickIndex], data[attentionStickIndex]
+        canvas.moveto(data[attentionStickIndex][1], CANVAS_WIDTH * attentionStickIndex / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[attentionStickIndex][0] / dataSize + 1)
+        canvas.moveto(data[compareStickIndex][1], CANVAS_WIDTH * compareStickIndex / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[compareStickIndex][0] / dataSize + 1)
+
+        if speedLimit != 0:
+            time.sleep(speedLimit / 2)
+        canvas.itemconfig(data[attentionStickIndex][1], fill="white")
+        canvas.itemconfig(data[compareStickIndex][1], fill="white")
+
+    # 두 막대를 교환하지 않고 색상만 표현하는 함수
+    def notExchangePairStick(attentionStickIndex, compareStickIndex, attentionStickColor = "red", compareStickColor = "blue"):
+        canvas.itemconfig(data[attentionStickIndex][1], fill=attentionStickColor)
+        canvas.itemconfig(data[compareStickIndex][1], fill=compareStickColor)
+
+        if speedLimit != 0:
+            time.sleep(speedLimit)
+        canvas.itemconfig(data[attentionStickIndex][1], fill="white")
+        canvas.itemconfig(data[compareStickIndex][1], fill="white")
+
+    # 막대 색상 변경
+    def changeColor(stickIndex, color):
+        canvas.itemconfig(data[stickIndex][1], fill=color)
+
+        if speedLimit != 0:
+            time.sleep(speedLimit)
+
+    # 정렬 선택 시 막대 섞기 함수
+    def shuffleStick():
+        global speedLimit
+    
+        drawTwoStick = []
+        tempSpeedLimitMemory = speedLimit
+        speedLimit = 0.0
+
+        for i in range(shuffleTime):
+            drawTwoStick = random.sample(data, 2)
+            exchangePairStick(drawTwoStick[0][0] - 1, drawTwoStick[1][0] - 1, "red", "red")
+
+        speedLimit = tempSpeedLimitMemory
+
+## ====================== 정렬 알고리즘 ====================== ##
+    def bubbleSort():
+        for i in range(dataSize):
+            for y in range(dataSize - 1, i, -1):
+                if data[y][0] < data[y - 1][0]:
+                    exchangePairStick(y, y - 1)
+                elif speedLimit != 0:
+                    notExchangePairStick(y, y - 1)
+                else:
+                    continue
+            changeColor(i, "yellow")
+
+## ====================== 탐색 알고리즘 ====================== ##
 
 
 ## ====================== 배치 ====================== ##
@@ -191,8 +305,21 @@ def main():
     buttonEnd[1].pack(side=LEFT, padx=5, pady=5, ipadx=15, ipady=3)
     buttonEnd[2].pack(side=LEFT, padx=5, pady=5, ipadx=15, ipady=3)
 
-
+    timerFunc()
     window.mainloop()
+
+## 전역 변수 ##
+timerRunning = False
+timerStartTime = time.time()
+
+sortOrSearchAlgorithm = 0
+algorithm = ""
+dataSize = 0
+speedLimit = 0.0
+shuffleTime = 0
+searchValue = 0
+
+data = []
 
 if __name__=="__main__":
     main()

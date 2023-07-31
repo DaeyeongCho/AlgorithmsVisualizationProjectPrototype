@@ -28,7 +28,7 @@ SPEED_LIMIT_MAX = 1.000
 SPEED_LIMIT_INCREMENT = 0.001
 
 SHUFFLE_TIMES = "섞는 횟수(회)"
-SHUFFLE_TIMES_DEFAULT = 1000
+SHUFFLE_TIMES_DEFAULT = 100
 SHUFFLE_TIMES_MIN = 0
 SHUFFLE_TIMES_MAX = 100000
 SHUFFLE_TIMES_INCREMENT = 100
@@ -48,6 +48,6 @@ LABEL_HINT_COLOR = ["red", "blue", "yellow"]
 
 LABEL_STATE = ["상태 : ", "---", "섞는 중...", "정렬 중...", "탐색 중...","섞기 완료!" , "정렬 완료!", "탐색 완료!"]
 
-ELAPSED_TIME = ["시간(s:ms)", "--:---"]
+ELAPSED_TIME = ["시간(s:ms)", "-:---"]
 
 END_BUTTONS = ["정지", "다시하기", "닫기"]
