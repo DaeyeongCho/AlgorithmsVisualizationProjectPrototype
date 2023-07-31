@@ -47,7 +47,7 @@ def main():
 
     checkbuttonAdvancedMenu = ttk.Checkbutton(frameGeneralMenu, text=ADVANCED_MENU, variable=boolVarCheckbuttonAdvancedMenu, command=lambda: checkbuttonAdvancedMenuFunc(boolVarCheckbuttonAdvancedMenu))
 
-    buttonStart = Button(frameGeneralMenu, text=START, command=lambda: bottonStartFunc())
+    buttonStart = Button(frameGeneralMenu, text=START, command=lambda: buttonStartFunc())
     
     # Advanced Menu 프레임 하위 위젯 정의
     labelDataSize = Label(frameAdvancedMenu, text=DATA_SIZE)
@@ -75,9 +75,9 @@ def main():
     labelElapsedTime = [ Label(frameSimulationElapsedTime, text=ELAPSED_TIME[0]),
                          Label(frameSimulationElapsedTime, text=ELAPSED_TIME[1]) ]
     
-    buttonEnd = [ Button(frameSimulationEndButtons, text=END_BUTTONS[0], command=lambda: buttonStopFunc()),
-                  Button(frameSimulationEndButtons, text=END_BUTTONS[1], command=lambda: buttonReplayFunc()),
-                  Button(frameSimulationEndButtons, text=END_BUTTONS[2], command=lambda: buttonEndFunc()),]
+    buttonEnd = [ Button(frameSimulationEndButtons, text=END_BUTTONS[0], command=lambda: buttonStopFunc(), state="disabled"),
+                  Button(frameSimulationEndButtons, text=END_BUTTONS[1], command=lambda: buttonReplayFunc(), state="disabled"),
+                  Button(frameSimulationEndButtons, text=END_BUTTONS[2], command=lambda: buttonEndFunc(), state="disabled")]
 
 
 
@@ -106,7 +106,7 @@ def main():
         else:
             frameAdvancedMenu.pack(side=TOP)
 
-    def bottonStartFunc():
+    def buttonStartFunc():
         frameSimulation.pack(side=BOTTOM, pady=(0, 10))
         sortOrSearchAlgorithm = intVarRadioButtonSelectAlgorithm.get()
         algorithm = strVarComboboxSelectAlgorithm.get()
@@ -125,7 +125,7 @@ def main():
         spinboxShuffleTimes.config(state="disabled")
         spinboxSearchValue.config(state="disabled")
 
-        startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, speedLimit, shuffleTime, searchValue, labelState[1], labelElapsedTime[1])
+        startSimulation(window, canvas, sortOrSearchAlgorithm, algorithm, dataSize, speedLimit, shuffleTime, searchValue, labelState[1], labelElapsedTime[1], buttonEnd)
 
     # Advanced Menu 프로그램
     def spinboxDataSizeFunc() :
@@ -136,7 +136,10 @@ def main():
         pass
 
     def buttonReplayFunc():
-        pass
+        buttonEnd[1].config(state="disabled")
+        buttonEnd[2].config(state="disabled")
+        canvas.delete(ALL)
+        buttonStartFunc()
 
     def buttonEndFunc():
         pass
