@@ -286,7 +286,6 @@ def main():
 
         radioButtonSelectAlgorithm[0].config(state="normal")
         radioButtonSelectAlgorithm[1].config(state="normal")
-        comboboxSelectAlgorithm.config(state="normal")
         checkbuttonAdvancedMenu.config(state="normal")
         buttonStart.config(state="normal")
         spinboxDataSize.config(state="normal")
