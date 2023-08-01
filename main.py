@@ -70,7 +70,9 @@ def main():
 
     labelHint = [ Label(frameSimulationHint, text=LABEL_HINT[0], foreground=LABEL_HINT_COLOR[0]),
                   Label(frameSimulationHint, text=LABEL_HINT[1], foreground=LABEL_HINT_COLOR[1]),
-                  Label(frameSimulationHint, text=LABEL_HINT[2], foreground=LABEL_HINT_COLOR[2])]
+                  Label(frameSimulationHint, text=LABEL_HINT[2], foreground=LABEL_HINT_COLOR[2]), 
+                  Label(frameSimulationHint, text=LABEL_HINT[3], foreground=LABEL_HINT_COLOR[3]), 
+                  Label(frameSimulationHint, text=LABEL_HINT[4], foreground=LABEL_HINT_COLOR[3]), ]
     
     labelState = [ Label(frameSimulationState, text=LABEL_STATE[0]),
                    Label(frameSimulationState, text=LABEL_STATE[1]) ]
@@ -116,6 +118,17 @@ def main():
         global speedLimit
         global shuffleTime
         global searchValue
+        global remindSearchValue
+        global data
+
+        canvas.delete(ALL)
+        data = []
+
+        labelState[1].config(text=LABEL_STATE[1])
+        labelElapsedTime[1].config(text=ELAPSED_TIME[1])
+        labelHint[4].configure(text=LABEL_HINT[4])
+        buttonEnd[1].config(state="disabled")
+        buttonEnd[2].config(state="disabled")
 
         frameSimulation.pack(side=BOTTOM, pady=(0, 10))
         sortOrSearchAlgorithm = intVarRadioButtonSelectAlgorithm.get()
@@ -124,6 +137,7 @@ def main():
         speedLimit = doubleVarSpeedLimit.get()
         shuffleTime = intVarShuffleTimes.get()
         searchValue = intVarSearchValue.get()
+        remindSearchValue = searchValue
 
         radioButtonSelectAlgorithm[0].config(state="disabled")
         radioButtonSelectAlgorithm[1].config(state="disabled")
@@ -134,8 +148,6 @@ def main():
         spinboxSpeedLimit.config(state="disabled")
         spinboxShuffleTimes.config(state="disabled")
         spinboxSearchValue.config(state="disabled")
-
-        print(speedLimit)
 
         createSticks()
 
@@ -151,10 +163,38 @@ def main():
         pass
 
     def buttonReplayFunc():
-        pass
+        global searchValue
+        global data
+
+        canvas.delete(ALL)
+        data = []
+
+        labelState[1].config(text=LABEL_STATE[1])
+        labelElapsedTime[1].config(text=ELAPSED_TIME[1])
+        labelHint[4].configure(text=LABEL_HINT[4])
+        buttonEnd[1].config(state="disabled")
+        buttonEnd[2].config(state="disabled")
+
+        if remindSearchValue == 0:
+            searchValue = random.randint(1, dataSize)
+        
+        createSticks()
+
+        startSimulationThread()
 
     def buttonEndFunc():
-        pass
+        global data
+
+        canvas.delete(ALL)
+        data = []
+
+        frameSimulation.pack_forget()
+
+        labelState[1].config(text=LABEL_STATE[1])
+        labelElapsedTime[1].config(text=ELAPSED_TIME[1])
+        labelHint[4].configure(text=LABEL_HINT[4])
+        buttonEnd[1].config(state="disabled")
+        buttonEnd[2].config(state="disabled")
 
 ## ====================== 타이머 함수 ====================== ##
     def timerFunc():
@@ -185,17 +225,55 @@ def main():
     def startSimulation():
         global timerRunning
         global timerStartTime
+        global searchValue
 
-        if sortOrSearchAlgorithm == 0:
+        buttonEnd[0].config(state="normal")
+
+        if sortOrSearchAlgorithm == 0: # 정렬 알고리즘
+            labelState[1].config(text=LABEL_STATE[2])
             shuffleStick()
+            labelState[1].config(text=LABEL_STATE[5])
+            time.sleep(1)
+            labelState[1].config(text=LABEL_STATE[3])
             timerStartTime = time.time()
             timerRunning = True
+
             if algorithm == SORT_ALGORITHMS[0]:
                 bubbleSort()
-        else:
-            pass
+            elif algorithm == SORT_ALGORITHMS[1]:
+                pass
 
-        timerRunning = False
+            timerRunning = False
+            labelState[1].config(text=LABEL_STATE[6])
+        else: # 탐색 알고리즘
+            if searchValue == 0:
+                searchValue = random.randint(1, dataSize)
+            labelHint[4].configure(text=str(searchValue))
+            labelState[1].config(text=LABEL_STATE[4])
+            timerStartTime = time.time()
+            timerRunning = True
+
+            if algorithm == SEARCH_ALGORITHMS[0]:
+                linearSearch()
+            elif algorithm == SEARCH_ALGORITHMS[1]:
+                pass
+
+            timerRunning = False
+            labelState[1].config(text=LABEL_STATE[7])
+
+        radioButtonSelectAlgorithm[0].config(state="normal")
+        radioButtonSelectAlgorithm[1].config(state="normal")
+        comboboxSelectAlgorithm.config(state="normal")
+        checkbuttonAdvancedMenu.config(state="normal")
+        buttonStart.config(state="normal")
+        spinboxDataSize.config(state="normal")
+        spinboxSpeedLimit.config(state="normal")
+        spinboxShuffleTimes.config(state="normal")
+        spinboxSearchValue.config(state="normal")
+        buttonEnd[1].config(state="normal")
+        buttonEnd[2].config(state="normal")
+        buttonEnd[0].config(state="disable")
+
 
     # 두 막대 교환 함수
     def exchangePairStick(attentionStickIndex, compareStickIndex, attentionStickColor = "red", compareStickColor = "blue"):
@@ -254,10 +332,18 @@ def main():
                     notExchangePairStick(y, y - 1)
                 else:
                     continue
+
             changeColor(i, "yellow")
 
 ## ====================== 탐색 알고리즘 ====================== ##
-
+    def linearSearch():
+        for i in data:
+            changeColor(i[0] - 1, "red")
+            if i[0] == searchValue:
+                changeColor(i[0] - 1, "yellow")
+                break
+            else:
+                changeColor(i[0] - 1, "white")
 
 ## ====================== 배치 ====================== ##
 
@@ -294,6 +380,8 @@ def main():
     labelHint[0].pack(side=LEFT)
     labelHint[1].pack(side=LEFT)
     labelHint[2].pack(side=LEFT)
+    labelHint[3].pack(side=LEFT)
+    labelHint[4].pack(side=LEFT)
 
     labelState[0].pack(side=LEFT)
     labelState[1].pack(side=LEFT)
@@ -318,6 +406,7 @@ dataSize = 0
 speedLimit = 0.0
 shuffleTime = 0
 searchValue = 0
+remindSearchValue = 0
 
 data = []
 

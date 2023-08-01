@@ -43,8 +43,8 @@ CANVAS_WIDTH = 1000
 CANVAS_HEIGHT = 500
 CANVAS_COLOR = "white"
 
-LABEL_HINT = ["주목", "비교", "픽스드"]
-LABEL_HINT_COLOR = ["red", "blue", "yellow"]
+LABEL_HINT = ["주목", "비교", "픽스 됨", "탐색 값 : ", "-"]
+LABEL_HINT_COLOR = ["red", "blue", "yellow", "black"]
 
 LABEL_STATE = ["상태 : ", "---", "섞는 중...", "정렬 중...", "탐색 중...","섞기 완료!" , "정렬 완료!", "탐색 완료!"]
 
