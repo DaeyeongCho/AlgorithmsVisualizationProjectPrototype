@@ -7,7 +7,6 @@ from tkinter import *
 from tkinter import messagebox, ttk
 
 from define import *
-#from functions import *
 
 def main():
 ## ====================== 정의 ====================== ##
@@ -284,13 +283,7 @@ def main():
             timerRunning = False
             labelState[1].config(text=LABEL_STATE[7])
 
-        radioButtonSelectAlgorithm[0].config(state="normal")
-        radioButtonSelectAlgorithm[1].config(state="normal")
-        checkbuttonAdvancedMenu.config(state="normal")
         buttonStart.config(state="normal")
-        spinboxDataSize.config(state="normal")
-        spinboxSpeedLimit.config(state="normal")
-        spinboxShuffleTimes.config(state="normal")
         spinboxSearchValue.config(state="normal")
         buttonEnd[1].config(state="normal")
         buttonEnd[2].config(state="normal")
@@ -407,7 +400,36 @@ def main():
         pass
 
     def quickSort():
-        pass
+        quickSortRecursive(data, 0, dataSize - 1)
+
+    def quickSortRecursive(array, start, end):
+        if start == end :
+            changeColorDelay(start, RED)
+            changeColor(start, YELLOW)
+            return
+        elif start >= end :
+            return
+        pivot = start
+        left = start
+        right = end
+
+        changeColor(pivot, RED)
+        
+        while left <= right:
+            while left <= end and array[left] <= array[pivot]:
+                left += 1
+            while right > start and array[right] >= array[pivot]:
+                right -= 1
+            if left > right:
+                exchangePairStick(pivot, right)
+                changeColor(right, YELLOW)
+            else:
+                exchangePairStick(right, left, BLUE)
+        
+        
+        quickSortRecursive(array, start, right - 1)
+        quickSortRecursive(array, right + 1, end)
+
 
 
 ## ====================== 탐색 알고리즘 ====================== ##
