@@ -263,7 +263,7 @@ def main():
             elif algorithm == SORT_ALGORITHMS[4]:
                 quickSort()
             elif algorithm == SORT_ALGORITHMS[5]:
-                pass
+                heapSort()
             else:
                 pass
 
@@ -415,30 +415,30 @@ def main():
             while left + step < n:
                 mid = left + step
                 right = min(left + 2 * step, n)
-                merge(arr, left, mid, right)  # 두 부분 리스트 병합
+                merge(arr, left, mid, right)
                 left += 2 * step
             step *= 2
 
     def merge(arr, left, mid, right):
-        temp = []  # 임시 리스트 대신 사용할 빈 리스트
+        temp = []
         for i in range(left, right):
             changeColor(i, BLUE)
         i, j = left, mid
         while i < mid and j < right:
             if arr[i][0] <= arr[j][0]:
-                temp.append(arr[i])  # 작은 원소를 temp에 추가
+                temp.append(arr[i])
                 i += 1
             else:
-                temp.append(arr[j])  # 작은 원소를 temp에 추가
+                temp.append(arr[j])
                 j += 1
         while i < mid:
-            temp.append(arr[i])  # 남은 원소들을 temp에 추가
+            temp.append(arr[i])
             i += 1
         while j < right:
-            temp.append(arr[j])  # 남은 원소들을 temp에 추가
+            temp.append(arr[j])
             j += 1
         for i in range(left, right):
-            arr[i] = temp[i - left]  # temp의 원소를 메인 리스트에 교환하며 병합
+            arr[i] = temp[i - left]
             changeColorDelay(i, RED)
             relocationOneStick(i)
             changeColor(i, YELLOW)
@@ -478,6 +478,42 @@ def main():
         quickSortRecursive(array, start, right - 1)
         quickSortRecursive(array, right + 1, end)
 
+    # 힙 정렬
+    def heapSort():
+        heap_sort(data)
+
+    def heap_sort(arr):
+        n = len(arr)
+        
+        labelState[1].config(text=LABEL_STATE[8])
+
+        for i in range(n // 2 - 1, -1, -1):
+            heapify(arr, n, i)
+        
+        labelState[1].config(text=LABEL_STATE[3])
+
+        for i in range(n - 1, 0, -1):
+            exchangePairStick(0, i)
+            changeColor(i, YELLOW)
+            heapify(arr, i, 0)
+        
+        changeColor(0, YELLOW)
+
+
+    def heapify(arr, n, i):
+        largest = i
+        left = 2 * i + 1
+        right = 2 * i + 2
+        
+        if left < n and arr[left][0] > arr[largest][0]:
+            largest = left
+        
+        if right < n and arr[right][0] > arr[largest][0]:
+            largest = right
+        
+        if largest != i:
+            exchangePairStick(i, largest)
+            heapify(arr, n, largest)
 
 
 ## ====================== 탐색 알고리즘 ====================== ##
