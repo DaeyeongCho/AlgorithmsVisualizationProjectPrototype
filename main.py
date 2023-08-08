@@ -159,7 +159,6 @@ def main():
 
     # Simulation 프로그램
     def buttonStopFunc():
-        
         pass
 
     def buttonReplayFunc():
@@ -210,16 +209,21 @@ def main():
 
     # canvas의 data[데이터 값, 막대 그래프] 리스트 생성 및 순서에 따라 재배치
     def createSticks():
-        for i in range(dataSize):
+        for i in range(dataSize - 1, -1, -1):
             data.append([i + 1, canvas.create_rectangle(0, 0, CANVAS_WIDTH / dataSize, CANVAS_HEIGHT * (i + 1) / dataSize, fill=WHITE)])
-
+        data.reverse()
+        print(data)
         for i in data:
             canvas.moveto(i[1], CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i[0] / dataSize + 1)
 
-    #canvas의 data[데이터 값, 막대 그래프] 리스트 순서에 따라 재배치
+    # canvas의 data[데이터 값, 막대 그래프] 리스트 순서에 따라 재배치
     def relocationStick():
         for i in data:
             canvas.moveto(i[1], CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i[0] / dataSize + 1)
+
+    # 막대 하나를 자신의 자리에 배치
+    def relocationOneStick(index):
+        canvas.moveto(data[index][1], CANVAS_WIDTH * index / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * data[index][0] / dataSize + 1)
 
     # 시작 버튼 클릭 시 시뮬레이션 하는 쓰레드 생성
     def startSimulationThread():
@@ -356,6 +360,7 @@ def main():
         speedLimit = tempSpeedLimitMemory
 
 ## ====================== 정렬 알고리즘 ====================== ##
+    # 버블 정렬
     def bubbleSort():
         for i in range(dataSize):
             for y in range(dataSize - 1, i, -1):
@@ -368,6 +373,7 @@ def main():
 
             changeColor(i, YELLOW)
 
+    # 선택 정렬
     def selectSort():
         minimumIndex = 0
         minimumValue = data[0][0]
@@ -383,6 +389,7 @@ def main():
             exchangePairStick(i, minimumIndex, RED, RED)
             changeColor(i, YELLOW)
 
+    # 삽입 정렬
     def insertSort():
         for i in range(1, dataSize):
             for y in range(i, 0, -1):
@@ -396,9 +403,50 @@ def main():
                     changeColor(y - 1, YELLOW)
                     break
 
+    #병합 정렬
     def mergeSort():
-        pass
+        mergeSortInplace(data)
 
+    def mergeSortInplace(arr):
+        n = len(arr)
+        step = 1
+        while step < n:
+            left = 0
+            while left + step < n:
+                mid = left + step
+                right = min(left + 2 * step, n)
+                merge(arr, left, mid, right)  # 두 부분 리스트 병합
+                left += 2 * step
+            step *= 2
+
+    def merge(arr, left, mid, right):
+        temp = []  # 임시 리스트 대신 사용할 빈 리스트
+        for i in range(left, right):
+            changeColor(i, BLUE)
+        i, j = left, mid
+        while i < mid and j < right:
+            if arr[i][0] <= arr[j][0]:
+                temp.append(arr[i])  # 작은 원소를 temp에 추가
+                i += 1
+            else:
+                temp.append(arr[j])  # 작은 원소를 temp에 추가
+                j += 1
+        while i < mid:
+            temp.append(arr[i])  # 남은 원소들을 temp에 추가
+            i += 1
+        while j < right:
+            temp.append(arr[j])  # 남은 원소들을 temp에 추가
+            j += 1
+        for i in range(left, right):
+            arr[i] = temp[i - left]  # temp의 원소를 메인 리스트에 교환하며 병합
+            changeColorDelay(i, RED)
+            relocationOneStick(i)
+            changeColor(i, YELLOW)
+        if right - left < dataSize - 1:
+            for i in range(left, right):
+                changeColor(i, WHITE)
+
+    #퀵 정렬
     def quickSort():
         quickSortRecursive(data, 0, dataSize - 1)
 

@@ -59,3 +59,28 @@ LABEL_STATE = ["상태 : ", "---", "섞는 중...", "정렬 중...", "탐색 중
 ELAPSED_TIME = ["시간(m:s.ms)", "--:--.---"]
 
 END_BUTTONS = ["정지", "다시하기", "닫기"]
+
+
+
+
+
+
+
+
+
+
+#main2
+
+## menubar ##
+FILE = "File"
+FILE_EXIT = "Exit"
+
+SETTING = "Setting"
+SETTING_FPS = "refresh rate"
+
+HELP = "Help"
+
+
+## setFPS ##
+RADIOBUTTON_SET_FPS = ["30", "60", "120", "144", "240"]
+BUTTON_SET_FPS = "설정"
