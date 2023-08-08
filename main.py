@@ -212,7 +212,7 @@ def main():
         for i in range(dataSize - 1, -1, -1):
             data.append([i + 1, canvas.create_rectangle(0, 0, CANVAS_WIDTH / dataSize, CANVAS_HEIGHT * (i + 1) / dataSize, fill=WHITE)])
         data.reverse()
-        print(data)
+
         for i in data:
             canvas.moveto(i[1], CANVAS_WIDTH * data.index(i) / dataSize + 1, CANVAS_HEIGHT - CANVAS_HEIGHT * i[0] / dataSize + 1)
 
